@@ -161,6 +161,7 @@ def set_game(args: argparse.Namespace) -> Game:
     return game
     
 def main(args: argparse.Namespace):
+    print(f"Simulation parameters: {vars(args)}")
     game = set_game(args)
 
     for _ in range(args.n_steps):

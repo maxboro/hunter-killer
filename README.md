@@ -3,6 +3,7 @@ Simulation of one hunter and one or multiple prey.
 
 # Session example
 ```terminal
+Simulation parameters: {'n_prey': 2, 'n_steps': 5, 'grid_size_x': 30, 'grid_size_y': 30}
 ----------------------------
 Player Prey_0 at [3, 18]
 Player Prey_1 at [27, 24]
@@ -23,14 +24,6 @@ Hunter at [23, 1]
 Player Prey_0 at [3, 15]
 Player Prey_1 at [27, 24]
 Hunter at [23, 0]
-----------------------------
-Player Prey_0 at [3, 15]
-Player Prey_1 at [27, 23]
-Hunter at [22, 0]
-----------------------------
-Player Prey_0 at [3, 15]
-Player Prey_1 at [27, 23]
-Hunter at [22, 1]
 ```
 
 # How to run 
