@@ -58,6 +58,7 @@ class Player:
         self._location = location
         self._moves = None
         self._is_alive = True
+        self.sign = None
 
     def __repr__(self):
         return f'Player {self._name} at [{self._location.x}, {self._location.y}]'
@@ -119,6 +120,7 @@ class Hunter(Player):
     def __init__(self, location: Location):
         super().__init__(name="Hunter", location=location)
         self._moves = ['left', 'right', 'up', 'down']
+        self.sign = "H"
 
     def  __repr__(self):
         return f'Hunter at [{self._location.x}, {self._location.y}]'
@@ -128,6 +130,7 @@ class Prey(Player):
     def __init__(self, name: str, location: Location):
         super().__init__(name, location)
         self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
+        self.sign = "P"
 
     def  __repr__(self):
         alive_info = "Is alive." if self._is_alive else "Is dead"
@@ -135,6 +138,7 @@ class Prey(Player):
 
     def kill(self):
         self._is_alive = False
+        self.sign = "X"
 
 
 class PreyList(UserList):
@@ -164,7 +168,26 @@ class Game:
         )
 
     def _show_grid(self):
-        print("Grid is shown")
+        empty_grid = [[
+            ' ' for el in range(GLOBALS["MAP_BOUNDARIES"].x[1] + 1)] 
+            for line in range(GLOBALS["MAP_BOUNDARIES"].y[1] + 1)
+        ]
+
+        ## populate grid
+        populated_grid = empty_grid.copy()
+
+        # add prey
+        for prey in self._prey:
+            loc = prey.get_location()
+            populated_grid[loc.y][loc.x] = prey.sign
+
+        # add hunter
+        loc = self._hunter.get_location()
+        populated_grid[loc.y][loc.x] = self._hunter.sign
+
+        # print grid
+        grid_print = '\n'.join(["|".join(line) for line in populated_grid])
+        print(grid_print)
 
     def show_status(self):
         for prey in self._prey:
