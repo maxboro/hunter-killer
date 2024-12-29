@@ -58,6 +58,7 @@ class Player:
         self._location = location
         self._moves = None
         self._is_alive = True
+        self.sign = None
 
     def __repr__(self):
         return f'Player {self._name} at [{self._location.x}, {self._location.y}]'
@@ -119,6 +120,7 @@ class Hunter(Player):
     def __init__(self, location: Location):
         super().__init__(name="Hunter", location=location)
         self._moves = ['left', 'right', 'up', 'down']
+        self.sign = "H"
 
     def  __repr__(self):
         return f'Hunter at [{self._location.x}, {self._location.y}]'
@@ -128,6 +130,7 @@ class Prey(Player):
     def __init__(self, name: str, location: Location):
         super().__init__(name, location)
         self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
+        self.sign = "P"
 
     def  __repr__(self):
         alive_info = "Is alive." if self._is_alive else "Is dead"
@@ -135,6 +138,7 @@ class Prey(Player):
 
     def kill(self):
         self._is_alive = False
+        self.sign = "X"
 
 
 class PreyList(UserList):
@@ -145,10 +149,11 @@ class PreyList(UserList):
 
 class Game:
     """High level game management."""
-    def __init__(self, randomizer):
+    def __init__(self, randomizer: Randomizer, show_grid: bool):
         self._prey = PreyList()
         self._hunter = None
         self._randomizer = randomizer
+        self._to_show_grid = show_grid
 
     def add_prey(self, prey_name: str):
         new_prey = Prey(
@@ -162,10 +167,34 @@ class Game:
             location = self._randomizer.create_random_location()
         )
 
-    def show_grid(self):
+    def _show_grid(self):
+        empty_grid = [[
+            ' ' for el in range(GLOBALS["MAP_BOUNDARIES"].x[1] + 1)] 
+            for line in range(GLOBALS["MAP_BOUNDARIES"].y[1] + 1)
+        ]
+
+        ## populate grid
+        populated_grid = empty_grid.copy()
+
+        # add prey
+        for prey in self._prey:
+            loc = prey.get_location()
+            populated_grid[loc.y][loc.x] = prey.sign
+
+        # add hunter
+        loc = self._hunter.get_location()
+        populated_grid[loc.y][loc.x] = self._hunter.sign
+
+        # print grid
+        grid_print = '\n'.join(["|".join(line) for line in populated_grid])
+        print(grid_print)
+
+    def show_status(self):
         for prey in self._prey:
             print(prey)
         print(self._hunter)
+        if self._to_show_grid:
+            self._show_grid()
 
     def make_move(self):
         print('----------------------------')
@@ -188,7 +217,7 @@ def set_game(args: argparse.Namespace) -> Game:
     )
 
     randomizer = Randomizer(random_state = 1)
-    game = Game(randomizer)
+    game = Game(randomizer, args.show_grid)
     for prey_id in range(args.n_prey):
         game.add_prey(prey_name = f'Prey_{prey_id}')
     game.add_hunter()
@@ -200,14 +229,14 @@ def main(args: argparse.Namespace):
     game = set_game(args)
 
     # start locations
-    game.show_grid()
+    game.show_status()
 
     # game loop
     for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
         game.perform_killings()
-        game.show_grid()
+        game.show_status()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -237,6 +266,11 @@ if __name__ == '__main__':
         default=30,
         type=int,
         help = 'Grid size in Y dimention'
+    )
+    parser.add_argument(
+        '--show_grid', 
+        action='store_true',
+        help='Flag to show grid'
     )
     args = parser.parse_args()
     main(args)
