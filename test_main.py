@@ -36,9 +36,9 @@ class TestRandomizer(unittest.TestCase):
         """Tests for .create_random_location()"""
         randomizer = main.Randomizer(1, self.map_bounderies)
         rand_loc = randomizer.create_random_location()
-        self.assertTrue(isinstance(rand_loc, main.Location))
-        self.assertTrue(isinstance(rand_loc.x, int))
-        self.assertTrue(isinstance(rand_loc.y, int))
+        self.assertIsInstance(rand_loc, main.Location)
+        self.assertIsInstance(rand_loc.x, int)
+        self.assertIsInstance(rand_loc.y, int)
 
 if __name__ == "__main__":
     unittest.main()
