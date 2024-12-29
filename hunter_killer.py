@@ -51,6 +51,7 @@ class Player:
         self._name = name
         self._location = location
         self._moves = None
+        self._is_alive = True
 
     def __repr__(self):
         return f'Player {self._name} at [{self._location.x}, {self._location.y}]'
@@ -88,7 +89,10 @@ class Player:
             'down': self._move_down,
             'pass': self._move_pass
         }
-        move_func = moves[where]
+        if self._is_alive:
+            move_func = moves[where]
+        else:
+            move_func = moves['pass']
         new_potential_location = self._location.copy()
         new_potential_location = move_func(new_potential_location)
         if new_potential_location.is_valid_location:
@@ -96,6 +100,9 @@ class Player:
 
     def random_move(self):
         self.move(choice(self._moves))
+
+    def get_location(self):
+        return self._location
 
 
 class Hunter(Player):
@@ -112,6 +119,13 @@ class Prey(Player):
     def __init__(self, name: str, location: Location):
         super().__init__(name, location)
         self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
+
+    def  __repr__(self):
+        alive_info = "Is alive." if self._is_alive else "Is dead"
+        return f'{self._name} at [{self._location.x}, {self._location.y}]. {alive_info}'
+
+    def kill(self):
+        self._is_alive = False
 
 
 class PreyList(UserList):
@@ -148,10 +162,14 @@ class Game:
         print('----------------------------')
         self._hunter.random_move()
         self._players.random_move()
-    
+
     def perform_killings(self):
         """Kill prey if possible."""
-        print("Killing")
+        hunter_current_location = self._hunter.get_location()
+        for player in self._players:
+            if player.get_location() == hunter_current_location:
+                player.kill()
+                print(f"{player} is killed.")
 
 
 def set_game(args: argparse.Namespace) -> Game:
