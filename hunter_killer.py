@@ -101,7 +101,7 @@ class Player:
             move_func = moves['pass']
         new_potential_location = self._location.copy()
         new_potential_location = move_func(new_potential_location)
-        if new_potential_location.is_valid_location:
+        if new_potential_location.is_valid_location():
             self._location = new_potential_location
 
     def random_move(self):
