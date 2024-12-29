@@ -145,10 +145,11 @@ class PreyList(UserList):
 
 class Game:
     """High level game management."""
-    def __init__(self, randomizer):
+    def __init__(self, randomizer: Randomizer, show_grid: bool):
         self._prey = PreyList()
         self._hunter = None
         self._randomizer = randomizer
+        self._show_grid = show_grid
 
     def add_prey(self, prey_name: str):
         new_prey = Prey(
@@ -162,10 +163,12 @@ class Game:
             location = self._randomizer.create_random_location()
         )
 
-    def show_grid(self):
+    def show_status(self):
         for prey in self._prey:
             print(prey)
         print(self._hunter)
+        if self._show_grid:
+            print("Grid is shown")
 
     def make_move(self):
         print('----------------------------')
@@ -188,7 +191,7 @@ def set_game(args: argparse.Namespace) -> Game:
     )
 
     randomizer = Randomizer(random_state = 1)
-    game = Game(randomizer)
+    game = Game(randomizer, args.show_grid)
     for prey_id in range(args.n_prey):
         game.add_prey(prey_name = f'Prey_{prey_id}')
     game.add_hunter()
@@ -200,14 +203,14 @@ def main(args: argparse.Namespace):
     game = set_game(args)
 
     # start locations
-    game.show_grid()
+    game.show_status()
 
     # game loop
     for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
         game.perform_killings()
-        game.show_grid()
+        game.show_status()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
