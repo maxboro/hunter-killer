@@ -149,7 +149,7 @@ class Game:
         self._prey = PreyList()
         self._hunter = None
         self._randomizer = randomizer
-        self._show_grid = show_grid
+        self._to_show_grid = show_grid
 
     def add_prey(self, prey_name: str):
         new_prey = Prey(
@@ -163,12 +163,15 @@ class Game:
             location = self._randomizer.create_random_location()
         )
 
+    def _show_grid(self):
+        print("Grid is shown")
+
     def show_status(self):
         for prey in self._prey:
             print(prey)
         print(self._hunter)
-        if self._show_grid:
-            print("Grid is shown")
+        if self._to_show_grid:
+            self._show_grid()
 
     def make_move(self):
         print('----------------------------')
