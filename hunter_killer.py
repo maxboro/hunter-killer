@@ -259,13 +259,13 @@ if __name__ == '__main__':
         '--grid_size_x', 
         default=30,
         type=int,
-        help = 'Grid size in X dimention'
+        help = 'Grid size in X dimension'
     )
     parser.add_argument(
         '--grid_size_y', 
         default=30,
         type=int,
-        help = 'Grid size in Y dimention'
+        help = 'Grid size in Y dimension'
     )
     parser.add_argument(
         '--show_grid', 
