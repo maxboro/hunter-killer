@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from collections import UserList
 from random import randint, seed, choice
 import time
+import argparse
 
 @dataclass
 class MapBoundaries:
@@ -21,7 +22,7 @@ class Location:
     def copy(self):
         return Location(**self.__dict__)
     
-    def is_valid_location(self, new_potential_location):
+    def is_valid_location(self):
         if (MAP_BOUNDARIES.x[0] <= self.x <= MAP_BOUNDARIES.x[1] 
             and MAP_BOUNDARIES.y[0] <= self.y <= MAP_BOUNDARIES.y[1]):
             return True
@@ -144,26 +145,55 @@ class Game:
         self.hunter.random_move()
         self._players.random_move()
     
-def set_game() -> Game:
+def set_game(args: argparse.Namespace) -> Game:
     global MAP_BOUNDARIES
-    MAP_BOUNDARIES = MapBoundaries(x = (0, 100), y = (0, 100))
+    MAP_BOUNDARIES = MapBoundaries(x = (0, args.grid_size_x - 1), y = (0, args.grid_size_y - 1))
     
     randomizer = Randomizer(random_state = 1)
     game = Game(randomizer)
-    game.add_player(player_name = 'John')
-    game.add_player(player_name = 'Helen')
+    for prey_id in range(args.n_prey):
+        game.add_player(player_name = f'Prey_{prey_id}')
     game.add_hunter()
     
     return game
     
-def main():
-    game = set_game()
+def main(args: argparse.Namespace):
+    game = set_game(args)
 
-    for _ in range(10):
+    for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
         game.show_grid()
     
     
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        prog='Hunter-killer',
+        description='Simulation of one hunter and one or multiple prey',
+    )
+    parser.add_argument(
+        '--n_prey', 
+        default=2,
+        type=int,
+        help = 'Number of prey'
+    )
+    parser.add_argument(
+        '--n_steps', 
+        default=20,
+        type=int,
+        help = 'Number of simulation steps'
+    )
+    parser.add_argument(
+        '--grid_size_x', 
+        default=30,
+        type=int,
+        help = 'Grid size in X dimention'
+    )
+    parser.add_argument(
+        '--grid_size_y', 
+        default=30,
+        type=int,
+        help = 'Grid size in Y dimention'
+    )
+    args = parser.parse_args()
+    main(args)
