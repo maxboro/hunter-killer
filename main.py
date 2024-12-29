@@ -43,7 +43,7 @@ class Location:
 
 class Randomizer:
 
-    def __init__(self, random_state):
+    def __init__(self, random_state: int):
         seed(random_state)
 
     def create_random_location(self):

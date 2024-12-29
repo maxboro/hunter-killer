@@ -110,7 +110,12 @@ P| |
 
 # How to run 
 ```bash
-python hunter_killer.py --n_prey=2 --n_steps=20 --grid_size_x=30 --grid_size_y=30 --show_grid
+python main.py --n_prey=2 --n_steps=20 --grid_size_x=30 --grid_size_y=30 --show_grid
+```
+
+# How to run unit tests
+```bash
+python test_main.py
 ```
 
 # Parameters
