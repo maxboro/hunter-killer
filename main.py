@@ -43,12 +43,13 @@ class Location:
 
 class Randomizer:
 
-    def __init__(self, random_state):
+    def __init__(self, random_state: int, map_boundaries: MapBoundaries):
         seed(random_state)
+        self._map_boundaries = map_boundaries
 
     def create_random_location(self):
-        x = randint(GLOBALS["MAP_BOUNDARIES"].x[0], GLOBALS["MAP_BOUNDARIES"].x[1])
-        y = randint(GLOBALS["MAP_BOUNDARIES"].y[0], GLOBALS["MAP_BOUNDARIES"].y[1])
+        x = randint(self._map_boundaries.x[0], self._map_boundaries.x[1])
+        y = randint(self._map_boundaries.y[0], self._map_boundaries.y[1])
         return Location(x, y)
 
 
@@ -219,7 +220,7 @@ def set_game(args: argparse.Namespace) -> Game:
         y = (0, args.grid_size_y - 1)
     )
 
-    randomizer = Randomizer(random_state = 1)
+    randomizer = Randomizer(random_state = 1, map_boundaries=GLOBALS["MAP_BOUNDARIES"])
     game = Game(randomizer, args.show_grid)
     for prey_id in range(args.n_prey):
         game.add_prey(prey_name = f'Prey_{prey_id}')
