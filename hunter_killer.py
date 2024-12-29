@@ -124,7 +124,7 @@ class Game:
     """High level game management."""
     def __init__(self, randomizer):
         self._players = PreyList()
-        self.hunter = None
+        self._hunter = None
         self._randomizer = randomizer
 
     def add_player(self, player_name):
@@ -135,23 +135,23 @@ class Game:
         self._players.append(new_player)
 
     def add_hunter(self):
-        self.hunter = Hunter(
+        self._hunter = Hunter(
             location = self._randomizer.create_random_location()
         )
 
     def show_grid(self):
         for player in self._players:
             print(player)
-        print(self.hunter)
+        print(self._hunter)
 
     def make_move(self):
         print('----------------------------')
-        self.hunter.random_move()
+        self._hunter.random_move()
         self._players.random_move()
     
     def perform_killings(self):
         """Kill prey if possible."""
-        raise NotImplementedError("")
+        print("Killing")
 
 
 def set_game(args: argparse.Namespace) -> Game:
