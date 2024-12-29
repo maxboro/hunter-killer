@@ -23,6 +23,12 @@ class Location:
     def __repr__(self):
         return f'[{self.x}; {self.y}]'
 
+    def __eq__(self, other):
+        if isinstance(other, Location):
+            return self.x == other.x and self.y == other.y
+        else:
+            raise ValueError("Location equality can be estimated only among Location type objects.")
+
     def copy(self):
         return Location(**self.__dict__)
 
@@ -51,6 +57,7 @@ class Player:
         self._name = name
         self._location = location
         self._moves = None
+        self._is_alive = True
 
     def __repr__(self):
         return f'Player {self._name} at [{self._location.x}, {self._location.y}]'
@@ -88,14 +95,23 @@ class Player:
             'down': self._move_down,
             'pass': self._move_pass
         }
-        move_func = moves[where]
+        if self._is_alive:
+            move_func = moves[where]
+        else:
+            move_func = moves['pass']
         new_potential_location = self._location.copy()
         new_potential_location = move_func(new_potential_location)
-        if new_potential_location.is_valid_location:
+        if new_potential_location.is_valid_location():
             self._location = new_potential_location
 
     def random_move(self):
         self.move(choice(self._moves))
+
+    def get_location(self):
+        return self._location
+
+    def get_name(self):
+        return self._name
 
 
 class Hunter(Player):
@@ -113,41 +129,56 @@ class Prey(Player):
         super().__init__(name, location)
         self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
 
+    def  __repr__(self):
+        alive_info = "Is alive." if self._is_alive else "Is dead"
+        return f'{self._name} at [{self._location.x}, {self._location.y}]. {alive_info}'
+
+    def kill(self):
+        self._is_alive = False
+
 
 class PreyList(UserList):
 
     def random_move(self):
-        for player in self:
-            player.random_move()
+        for prey in self:
+            prey.random_move()
 
 class Game:
     """High level game management."""
     def __init__(self, randomizer):
-        self._players = PreyList()
-        self.hunter = None
+        self._prey = PreyList()
+        self._hunter = None
         self._randomizer = randomizer
 
-    def add_player(self, player_name):
-        new_player = Prey(
-            name = player_name,
+    def add_prey(self, prey_name: str):
+        new_prey = Prey(
+            name = prey_name,
             location = self._randomizer.create_random_location()
         )
-        self._players.append(new_player)
+        self._prey.append(new_prey)
 
     def add_hunter(self):
-        self.hunter = Hunter(
+        self._hunter = Hunter(
             location = self._randomizer.create_random_location()
         )
 
     def show_grid(self):
-        for player in self._players:
-            print(player)
-        print(self.hunter)
+        for prey in self._prey:
+            print(prey)
+        print(self._hunter)
 
     def make_move(self):
         print('----------------------------')
-        self.hunter.random_move()
-        self._players.random_move()
+        self._hunter.random_move()
+        self._prey.random_move()
+
+    def perform_killings(self):
+        """Kill prey if possible."""
+        hunter_current_location = self._hunter.get_location()
+        for prey in self._prey:
+            if prey.get_location() == hunter_current_location:
+                prey.kill()
+                print(f"{prey.get_name()} is killed.")
 
 
 def set_game(args: argparse.Namespace) -> Game:
@@ -159,7 +190,7 @@ def set_game(args: argparse.Namespace) -> Game:
     randomizer = Randomizer(random_state = 1)
     game = Game(randomizer)
     for prey_id in range(args.n_prey):
-        game.add_player(player_name = f'Prey_{prey_id}')
+        game.add_prey(prey_name = f'Prey_{prey_id}')
     game.add_hunter()
 
     return game
@@ -168,10 +199,14 @@ def main(args: argparse.Namespace):
     print(f"Simulation parameters: {vars(args)}")
     game = set_game(args)
 
+    # start locations
+    game.show_grid()
+
     # game loop
     for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
+        game.perform_killings()
         game.show_grid()
 
 if __name__ == '__main__':
