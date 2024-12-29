@@ -148,6 +148,10 @@ class Game:
         print('----------------------------')
         self.hunter.random_move()
         self._players.random_move()
+    
+    def perform_killings(self):
+        """Kill prey if possible."""
+        raise NotImplementedError("")
 
 
 def set_game(args: argparse.Namespace) -> Game:
@@ -172,6 +176,7 @@ def main(args: argparse.Namespace):
     for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
+        game.perform_killings()
         game.show_grid()
 
 if __name__ == '__main__':
