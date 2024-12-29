@@ -140,22 +140,22 @@ class Prey(Player):
 class PreyList(UserList):
 
     def random_move(self):
-        for player in self:
-            player.random_move()
+        for prey in self:
+            prey.random_move()
 
 class Game:
     """High level game management."""
     def __init__(self, randomizer):
-        self._players = PreyList()
+        self._prey = PreyList()
         self._hunter = None
         self._randomizer = randomizer
 
-    def add_player(self, player_name):
-        new_player = Prey(
-            name = player_name,
+    def add_prey(self, prey_name: str):
+        new_prey = Prey(
+            name = prey_name,
             location = self._randomizer.create_random_location()
         )
-        self._players.append(new_player)
+        self._prey.append(new_prey)
 
     def add_hunter(self):
         self._hunter = Hunter(
@@ -163,22 +163,22 @@ class Game:
         )
 
     def show_grid(self):
-        for player in self._players:
-            print(player)
+        for prey in self._prey:
+            print(prey)
         print(self._hunter)
 
     def make_move(self):
         print('----------------------------')
         self._hunter.random_move()
-        self._players.random_move()
+        self._prey.random_move()
 
     def perform_killings(self):
         """Kill prey if possible."""
         hunter_current_location = self._hunter.get_location()
-        for player in self._players:
-            if player.get_location() == hunter_current_location:
-                player.kill()
-                print(f"{player.get_name()} is killed.")
+        for prey in self._prey:
+            if prey.get_location() == hunter_current_location:
+                prey.kill()
+                print(f"{prey.get_name()} is killed.")
 
 
 def set_game(args: argparse.Namespace) -> Game:
@@ -190,7 +190,7 @@ def set_game(args: argparse.Namespace) -> Game:
     randomizer = Randomizer(random_state = 1)
     game = Game(randomizer)
     for prey_id in range(args.n_prey):
-        game.add_player(player_name = f'Prey_{prey_id}')
+        game.add_prey(prey_name = f'Prey_{prey_id}')
     game.add_hunter()
 
     return game
