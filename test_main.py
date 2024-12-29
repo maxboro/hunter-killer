@@ -40,6 +40,31 @@ class TestRandomizer(unittest.TestCase):
         self.assertIsInstance(rand_loc.x, int)
         self.assertIsInstance(rand_loc.y, int)
 
+class TestHunter(unittest.TestCase):
+    """Tests for main.Hunter."""
+    def setUp(self):
+        self.hunter = main.Hunter(main.Location(0, 0))
+
+    def test_creation(self):
+        self.assertIsInstance(self.hunter, main.Hunter)
+        self.assertTrue(self.hunter.sign, "H")
+        self.assertIsInstance(self.hunter.get_location(), main.Location)
+
+class TestPrey(unittest.TestCase):
+    """Tests for main.Prey."""
+    def setUp(self):
+        self.prey_alive = main.Prey("Prey_test1", main.Location(0, 0))
+        self.prey_dead = main.Prey("Prey_test1", main.Location(0, 0))
+        self.prey_dead.kill()
+
+    def test_creation(self):
+        self.assertIsInstance(self.prey_alive, main.Prey)
+        self.assertTrue(self.prey_alive.sign, "P")
+        self.assertIsInstance(self.prey_alive.get_location(), main.Location)
+
+    def test_kill(self):
+        self.assertTrue(self.prey_dead.sign, "X")
+        self.assertFalse(self.prey_dead._is_alive)
+
 if __name__ == "__main__":
     unittest.main()
-
