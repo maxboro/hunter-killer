@@ -23,6 +23,12 @@ class Location:
     def __repr__(self):
         return f'[{self.x}; {self.y}]'
 
+    def __eq__(self, other):
+        if isinstance(other, Location):
+            return self.x == other.x and self.y == other.y
+        else:
+            raise ValueError("Location equality can be estimated only among Location type objects.")
+
     def copy(self):
         return Location(**self.__dict__)
 
@@ -104,6 +110,9 @@ class Player:
     def get_location(self):
         return self._location
 
+    def get_name(self):
+        return self._name
+
 
 class Hunter(Player):
 
@@ -169,7 +178,7 @@ class Game:
         for player in self._players:
             if player.get_location() == hunter_current_location:
                 player.kill()
-                print(f"{player} is killed.")
+                print(f"{player.get_name()} is killed.")
 
 
 def set_game(args: argparse.Namespace) -> Game:
@@ -189,6 +198,9 @@ def set_game(args: argparse.Namespace) -> Game:
 def main(args: argparse.Namespace):
     print(f"Simulation parameters: {vars(args)}")
     game = set_game(args)
+
+    # start locations
+    game.show_grid()
 
     # game loop
     for _ in range(args.n_steps):
