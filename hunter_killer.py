@@ -238,5 +238,10 @@ if __name__ == '__main__':
         type=int,
         help = 'Grid size in Y dimention'
     )
+    parser.add_argument(
+        '--show_grid', 
+        action='store_true',
+        help='Flag to show grid'
+    )
     args = parser.parse_args()
     main(args)
