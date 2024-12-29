@@ -25,17 +25,16 @@ class TestLocation(unittest.TestCase):
 class TestRandomizer(unittest.TestCase):
     """Tests for main.Randomizer."""
     def setUp(self):
-        self.grid_size_x = 3
-        self.grid_size_y = 3
-        self.map_bounderies = main.MapBoundaries(
-                x = (0, self.grid_size_x - 1),
-                y = (0, self.grid_size_y - 1)
+        map_boundaries = main.MapBoundaries(
+                x = (0, 3),
+                y = (0, 3)
         )
+        main.GLOBALS["MAP_BOUNDARIES"] = map_boundaries
+        self.randomizer = main.Randomizer(1)
 
     def test_create_random_location(self):
         """Tests for .create_random_location()"""
-        randomizer = main.Randomizer(1, self.map_bounderies)
-        rand_loc = randomizer.create_random_location()
+        rand_loc = self.randomizer.create_random_location()
         self.assertIsInstance(rand_loc, main.Location)
         self.assertIsInstance(rand_loc.x, int)
         self.assertIsInstance(rand_loc.y, int)
