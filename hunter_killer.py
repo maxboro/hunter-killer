@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from collections import UserList
 from random import randint, seed, choice
 import time
+import copy
 import argparse
 
 GLOBALS = {
@@ -154,6 +155,11 @@ class Game:
         self._hunter = None
         self._randomizer = randomizer
         self._to_show_grid = show_grid
+        self._empty_grid = [[
+            ' ' for el in range(GLOBALS["MAP_BOUNDARIES"].x[1] + 1)] 
+            for line in range(GLOBALS["MAP_BOUNDARIES"].y[1] + 1)
+        ]
+        self._populated_grid = None
 
     def add_prey(self, prey_name: str):
         new_prey = Prey(
@@ -168,13 +174,7 @@ class Game:
         )
 
     def _show_grid(self):
-        empty_grid = [[
-            ' ' for el in range(GLOBALS["MAP_BOUNDARIES"].x[1] + 1)] 
-            for line in range(GLOBALS["MAP_BOUNDARIES"].y[1] + 1)
-        ]
-
-        ## populate grid
-        populated_grid = empty_grid.copy()
+        populated_grid = copy.deepcopy(self._empty_grid)
 
         # add prey
         for prey in self._prey:
@@ -185,8 +185,11 @@ class Game:
         loc = self._hunter.get_location()
         populated_grid[loc.y][loc.x] = self._hunter.sign
 
+        # save current grid
+        self._populated_grid = populated_grid
+
         # print grid
-        grid_print = '\n'.join(["|".join(line) for line in populated_grid])
+        grid_print = '\n'.join(["|".join(line) for line in self._populated_grid])
         print(grid_print)
 
     def show_status(self):
