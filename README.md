@@ -1,4 +1,4 @@
-# Destription
+# Description
 Simulation of one hunter and one or multiple prey.
 
 # Session example
