@@ -66,5 +66,27 @@ class TestPrey(unittest.TestCase):
         self.assertTrue(self.prey_dead.sign, "X")
         self.assertFalse(self.prey_dead._is_alive)
 
+class TestPlayerMovement(unittest.TestCase):
+    """Test movement related behaviour."""
+    def setUp(self):
+        # Setup minimal boundaries
+        self.map_boundaries = main.MapBoundaries(x=(0, 1), y=(0, 1))
+        main.GLOBALS["MAP_BOUNDARIES"] = self.map_boundaries
+        self.hunter = main.Hunter(location=main.Location(0, 0))
+
+    def test_move_left_at_boundary(self):
+        """Test not to cross the left boundary."""
+        # The hunter is at x=0; moving left should keep x=0
+        self.hunter.move('left')
+        self.assertEqual(self.hunter.get_location().x, 0)
+        self.assertEqual(self.hunter.get_location().y, 0)
+
+    def test_move_up_within_boundary(self):
+        """Test not to cross the up boundary."""
+        # With y boundary = 1, if y=0 => up => y=1
+        self.hunter.move('up')
+        self.assertEqual(self.hunter.get_location().x, 0)
+        self.assertEqual(self.hunter.get_location().y, 1)
+
 if __name__ == "__main__":
     unittest.main()
