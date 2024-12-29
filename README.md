@@ -3,27 +3,37 @@ Simulation of one hunter and one or multiple prey.
 
 # Session example
 ```terminal
-Simulation parameters: {'n_prey': 2, 'n_steps': 5, 'grid_size_x': 30, 'grid_size_y': 30}
+Simulation parameters: {'n_prey': 5, 'n_steps': 5, 'grid_size_x': 3, 'grid_size_y': 3}
+Prey_0 at [0, 2]. Is alive.
+Prey_1 at [0, 1]. Is alive.
+Prey_2 at [0, 1]. Is alive.
+Prey_3 at [1, 1]. Is alive.
+Prey_4 at [2, 1]. Is alive.
+Hunter at [0, 0]
 ----------------------------
-Player Prey_0 at [3, 18]
-Player Prey_1 at [27, 24]
-Hunter at [24, 3]
+Prey_2 is killed.
+Prey_0 at [0, 2]. Is alive.
+Prey_1 at [0, 1]. Is alive.
+Prey_2 at [0, 0]. Is dead
+Prey_3 at [1, 0]. Is alive.
+Prey_4 at [2, 1]. Is alive.
+Hunter at [0, 0]
 ----------------------------
-Player Prey_0 at [3, 17]
-Player Prey_1 at [27, 24]
-Hunter at [24, 2]
+Prey_1 is killed.
+Prey_2 is killed.
+Prey_0 at [0, 2]. Is alive.
+Prey_1 at [0, 0]. Is dead
+Prey_2 at [0, 0]. Is dead
+Prey_3 at [1, 0]. Is alive.
+Prey_4 at [2, 1]. Is alive.
+Hunter at [0, 0]
 ----------------------------
-Player Prey_0 at [3, 17]
-Player Prey_1 at [28, 24]
-Hunter at [24, 1]
-----------------------------
-Player Prey_0 at [3, 16]
-Player Prey_1 at [27, 24]
-Hunter at [23, 1]
-----------------------------
-Player Prey_0 at [3, 15]
-Player Prey_1 at [27, 24]
-Hunter at [23, 0]
+Prey_0 at [0, 2]. Is alive.
+Prey_1 at [0, 0]. Is dead
+Prey_2 at [0, 0]. Is dead
+Prey_3 at [0, 0]. Is alive.
+Prey_4 at [1, 1]. Is alive.
+Hunter at [1, 0]
 ```
 
 # How to run 
