@@ -4,6 +4,10 @@ from random import randint, seed, choice
 import time
 import argparse
 
+GLOBALS = {
+    "MAP_BOUNDARIES": None,
+}
+
 @dataclass
 class MapBoundaries:
     x: tuple
@@ -23,8 +27,8 @@ class Location:
         return Location(**self.__dict__)
     
     def is_valid_location(self):
-        if (MAP_BOUNDARIES.x[0] <= self.x <= MAP_BOUNDARIES.x[1] 
-            and MAP_BOUNDARIES.y[0] <= self.y <= MAP_BOUNDARIES.y[1]):
+        if (GLOBALS["MAP_BOUNDARIES"].x[0] <= self.x <= GLOBALS["MAP_BOUNDARIES"].x[1] 
+            and GLOBALS["MAP_BOUNDARIES"].y[0] <= self.y <= GLOBALS["MAP_BOUNDARIES"].y[1]):
             return True
         else:
             return False
@@ -36,13 +40,13 @@ class Randomizer:
         seed(random_state)
         
     def create_random_location(self):
-        x = randint(MAP_BOUNDARIES.x[0], MAP_BOUNDARIES.x[1])
-        y = randint(MAP_BOUNDARIES.y[0], MAP_BOUNDARIES.y[1])
+        x = randint(GLOBALS["MAP_BOUNDARIES"].x[0], GLOBALS["MAP_BOUNDARIES"].x[1])
+        y = randint(GLOBALS["MAP_BOUNDARIES"].y[0], GLOBALS["MAP_BOUNDARIES"].y[1])
         return Location(x, y)
 
 
 class Player:
-    
+    """General game agent abstraction."""
     def __init__(self, name: str, location: Location):
         self._name = name
         self._location = location
@@ -97,7 +101,7 @@ class Player:
 class Hunter(Player):
     
     def __init__(self, location: Location):
-        self._location = location
+        super().__init__(name="Hunter", location=location)
         self._moves = ['left', 'right', 'up', 'down']
     
     def  __repr__(self):
@@ -107,19 +111,19 @@ class Prey(Player):
     
     def __init__(self, name: str, location: Location):
         super().__init__(name, location)
-        self._moves = ['left', 'right', 'up', 'down', 'pass', 'pass', 'pass']
+        self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
 
 
-class PrayList(UserList):
+class PreyList(UserList):
     
     def random_move(self):
         for player in self:
             player.random_move()
     
 class Game:
-    
+    """High level game management."""
     def __init__(self, randomizer):
-        self._players = PrayList()
+        self._players = PreyList()
         self.hunter = None
         self._randomizer = randomizer
     
@@ -146,8 +150,7 @@ class Game:
         self._players.random_move()
     
 def set_game(args: argparse.Namespace) -> Game:
-    global MAP_BOUNDARIES
-    MAP_BOUNDARIES = MapBoundaries(x = (0, args.grid_size_x - 1), y = (0, args.grid_size_y - 1))
+    GLOBALS["MAP_BOUNDARIES"] = MapBoundaries(x = (0, args.grid_size_x - 1), y = (0, args.grid_size_y - 1))
     
     randomizer = Randomizer(random_state = 1)
     game = Game(randomizer)
