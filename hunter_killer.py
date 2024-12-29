@@ -164,6 +164,7 @@ def main(args: argparse.Namespace):
     print(f"Simulation parameters: {vars(args)}")
     game = set_game(args)
 
+    # game loop
     for _ in range(args.n_steps):
         time.sleep(0.5)
         game.make_move()
