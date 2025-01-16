@@ -15,6 +15,7 @@ class Settings:
         if not hasattr(self, "_initialized"):
             self._settings = {}
             self._initialized = True
+            self._load()
 
     def __repr__(self) -> str:
         return str(self._settings)
@@ -25,7 +26,7 @@ class Settings:
             "y": {"min": 0, "max": self._settings["grid_size_y"] - 1},
         }
 
-    def load(self) -> None:
+    def _load(self) -> None:
         with open("settings.txt", "r") as settings_file:
             settings_str = settings_file.read()
 
@@ -251,7 +252,6 @@ def set_game(settings: Settings) -> Game:
 
 def main():
     settings = Settings()
-    settings.load()
 
     print(f"Simulation parameters: {settings}")
     game = set_game(settings)
