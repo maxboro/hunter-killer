@@ -75,7 +75,7 @@ class Randomizer:
 
     def create_random_location(self) -> Location:
         x = randint(self._map_boundaries["x"]["min"], self._map_boundaries["x"]["max"])
-        y = randint(self._map_boundaries["y"]["min"], self._map_boundaries["x"]["max"])
+        y = randint(self._map_boundaries["y"]["min"], self._map_boundaries["y"]["max"])
         return Location(x, y)
 
 
