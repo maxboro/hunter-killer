@@ -1,0 +1,5 @@
+n_prey=5
+n_steps=20
+grid_size_x=5
+grid_size_y=5
+show_grid=1
