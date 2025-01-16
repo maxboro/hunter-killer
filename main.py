@@ -53,10 +53,7 @@ class Location:
         return f'[{self.x}; {self.y}]'
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, Location):
-            return self.x == other.x and self.y == other.y
-        else:
-            raise ValueError("Location equality can be estimated only among Location type objects.")
+        return isinstance(other, Location) and self.x == other.x and self.y == other.y
 
     def copy(self) -> Self:
         return Location(self.x, self.y)
