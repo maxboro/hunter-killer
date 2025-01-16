@@ -1,38 +1,31 @@
-from dataclasses import dataclass
 from collections import UserList
 from random import randint, seed, choice
 import time
 import copy
-import argparse
-
-@dataclass
-class MapBoundaries:
-    x: tuple
-    y: tuple
-
+from typing import Self
 
 class Settings:
-
-    def __new__(cls):
+    """Settings singletone abstraction"""
+    def __new__(cls) -> Self:
         if not hasattr(cls, "instance"):
             cls.instance = super(Settings, cls).__new__(cls)
         return cls.instance
 
-    def __init__(self):
+    def __init__(self) -> None:
         if not hasattr(self, "_initialized"):
             self._settings = {}
             self._initialized = True
-    
-    def __repr__(self):
+
+    def __repr__(self) -> str:
         return str(self._settings)
 
-    def _calc_derivative_parameters(self):
+    def _calc_derivative_parameters(self) -> None:
         self._settings["map_boundaries"] = {
             "x": {"min": 0, "max": self._settings["grid_size_x"] - 1},
             "y": {"min": 0, "max": self._settings["grid_size_y"] - 1},
         }
 
-    def load(self):
+    def load(self) -> None:
         with open("settings.txt", "r") as settings_file:
             settings_str = settings_file.read()
 
@@ -42,7 +35,7 @@ class Settings:
                 name, value = line.split("=")
                 self._settings[name] = int(value)
         self._calc_derivative_parameters()
-    
+
     def get(self, setting_name: str):
         if setting_name in self._settings:
             return self._settings[setting_name]
@@ -51,7 +44,7 @@ class Settings:
 
 class Location:
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int) -> None:
         self.x = x
         self.y = y
         self._map_boundaries = Settings().get("map_boundaries")
@@ -65,7 +58,7 @@ class Location:
         else:
             raise ValueError("Location equality can be estimated only among Location type objects.")
 
-    def copy(self):
+    def copy(self) -> Self:
         return Location(self.x, self.y)
 
     def is_valid_location(self) -> bool:
@@ -77,12 +70,12 @@ class Location:
 
 
 class Randomizer:
-
-    def __init__(self, random_state: int):
+    """Pseudorandom number utils."""
+    def __init__(self, random_state: int) -> None:
         seed(random_state)
         self._map_boundaries = Settings().get("map_boundaries")
 
-    def create_random_location(self):
+    def create_random_location(self) -> Location:
         x = randint(self._map_boundaries["x"]["min"], self._map_boundaries["x"]["max"])
         y = randint(self._map_boundaries["y"]["min"], self._map_boundaries["x"]["max"])
         return Location(x, y)
@@ -90,41 +83,41 @@ class Randomizer:
 
 class Player:
     """General game agent abstraction."""
-    def __init__(self, name: str, location: Location):
+    def __init__(self, name: str, location: Location) -> None:
         self._name = name
         self._location = location
         self._moves = None
         self._is_alive = True
         self.sign = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Player {self._name} at [{self._location.x}, {self._location.y}]'
 
     @staticmethod
-    def _move_left(new_potential_location):
+    def _move_left(new_potential_location) -> Location:
         new_potential_location.x -= 1
         return new_potential_location
 
     @staticmethod
-    def _move_right(new_potential_location):
+    def _move_right(new_potential_location) -> Location:
         new_potential_location.x += 1
         return new_potential_location
 
     @staticmethod
-    def _move_down(new_potential_location):
+    def _move_down(new_potential_location) -> Location:
         new_potential_location.y -= 1
         return new_potential_location
 
     @staticmethod
-    def _move_up(new_potential_location):
+    def _move_up(new_potential_location) -> Location:
         new_potential_location.y += 1
         return new_potential_location
 
     @staticmethod
-    def _move_pass(new_potential_location):
+    def _move_pass(new_potential_location) -> Location:
         return new_potential_location
 
-    def move(self, where: str):
+    def move(self, where: str) -> None:
         assert where in {'left', 'right', 'up', 'down', 'pass'}
         moves = {
             'left': self._move_left, 
@@ -142,51 +135,51 @@ class Player:
         if new_potential_location.is_valid_location():
             self._location = new_potential_location
 
-    def random_move(self):
+    def random_move(self) -> None:
         self.move(choice(self._moves))
 
-    def get_location(self):
+    def get_location(self) -> Location:
         return self._location
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self._name
 
 
 class Hunter(Player):
 
-    def __init__(self, location: Location):
+    def __init__(self, location: Location) -> None:
         super().__init__(name="Hunter", location=location)
         self._moves = ['left', 'right', 'up', 'down']
         self.sign = "H"
 
-    def  __repr__(self):
+    def  __repr__(self) -> str:
         return f'Hunter at [{self._location.x}, {self._location.y}]'
 
 class Prey(Player):
 
-    def __init__(self, name: str, location: Location):
+    def __init__(self, name: str, location: Location) -> None:
         super().__init__(name, location)
         self._moves = ['left', 'right', 'up', 'down'] + 3*['pass']
         self.sign = "P"
 
-    def  __repr__(self):
+    def  __repr__(self) -> str:
         alive_info = "Is alive." if self._is_alive else "Is dead"
         return f'{self._name} at [{self._location.x}, {self._location.y}]. {alive_info}'
 
-    def kill(self):
+    def kill(self) -> None:
         self._is_alive = False
         self.sign = "X"
 
 
 class PreyList(UserList):
 
-    def random_move(self):
+    def random_move(self) -> None:
         for prey in self:
             prey.random_move()
 
 class Game:
     """High level game management."""
-    def __init__(self, randomizer: Randomizer, show_grid: int):
+    def __init__(self, randomizer: Randomizer, show_grid: int) -> None:
         self._prey = PreyList()
         self._hunter = None
         self._randomizer = randomizer
@@ -198,19 +191,19 @@ class Game:
         ]
         self._populated_grid = None
 
-    def add_prey(self, prey_name: str):
+    def add_prey(self, prey_name: str) -> None:
         new_prey = Prey(
             name = prey_name,
             location = self._randomizer.create_random_location()
         )
         self._prey.append(new_prey)
 
-    def add_hunter(self):
+    def add_hunter(self) -> None:
         self._hunter = Hunter(
             location = self._randomizer.create_random_location()
         )
 
-    def _show_grid(self):
+    def _show_grid(self) -> None:
         populated_grid = copy.deepcopy(self._empty_grid)
 
         # add prey
@@ -229,19 +222,19 @@ class Game:
         grid_print = '\n'.join(["|".join(line) for line in self._populated_grid])
         print(grid_print)
 
-    def show_status(self):
+    def show_status(self) -> None:
         for prey in self._prey:
             print(prey)
         print(self._hunter)
         if self._to_show_grid:
             self._show_grid()
 
-    def make_move(self):
+    def make_move(self) -> None:
         print('----------------------------')
         self._hunter.random_move()
         self._prey.random_move()
 
-    def perform_killings(self):
+    def perform_killings(self) -> None:
         """Kill prey if possible."""
         hunter_current_location = self._hunter.get_location()
         for prey in self._prey:
