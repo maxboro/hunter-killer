@@ -8,11 +8,7 @@ class TestLocation(unittest.TestCase):
         self.assertEqual(main.Location(1, 2),  main.Location(1, 2))
         self.assertEqual(main.Location(0, 0),  main.Location(0, 0))
         self.assertNotEqual(main.Location(0, 0),  main.Location(1, 0))
-
-    def test_locations_eq_type_exeption(self):
-        """Test __eq__ exception for cases of different type."""
-        with self.assertRaises(ValueError):
-            _ = main.Location(0, 0) == (0, 0)
+        self.assertNotEqual(main.Location(0, 0),  (0, 0))
 
     def test_locations_copy(self):
         """Checks for .copy()"""
@@ -25,11 +21,7 @@ class TestLocation(unittest.TestCase):
 class TestRandomizer(unittest.TestCase):
     """Tests for main.Randomizer."""
     def setUp(self):
-        map_boundaries = main.MapBoundaries(
-                x = (0, 3),
-                y = (0, 3)
-        )
-        main.GLOBALS["MAP_BOUNDARIES"] = map_boundaries
+        self.settings = main.Settings()
         self.randomizer = main.Randomizer(1)
 
     def test_create_random_location(self):
@@ -38,6 +30,10 @@ class TestRandomizer(unittest.TestCase):
         self.assertIsInstance(rand_loc, main.Location)
         self.assertIsInstance(rand_loc.x, int)
         self.assertIsInstance(rand_loc.y, int)
+        self.assertGreaterEqual(rand_loc.x, 0)
+        self.assertLessEqual(rand_loc.x, self.settings.get("map_boundaries")["x"]["max"])
+        self.assertGreaterEqual(rand_loc.y, 0)
+        self.assertLessEqual(rand_loc.y, self.settings.get("map_boundaries")["y"]["max"])
 
 class TestHunter(unittest.TestCase):
     """Tests for main.Hunter."""
@@ -69,8 +65,7 @@ class TestPlayerMovement(unittest.TestCase):
     """Test movement related behaviour."""
     def setUp(self):
         # Setup minimal boundaries
-        self.map_boundaries = main.MapBoundaries(x=(0, 1), y=(0, 1))
-        main.GLOBALS["MAP_BOUNDARIES"] = self.map_boundaries
+        self.settings = main.Settings()
         self.hunter = main.Hunter(location=main.Location(0, 0))
 
     def test_move_left_at_boundary(self):
